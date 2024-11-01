@@ -1,0 +1,42 @@
+package org.example.MyForstProject;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class NoteTakingAppTest {
+    private NoteTakingApp noteTakingApp;
+
+    @BeforeEach
+    public void setUp() {
+        noteTakingApp = new NoteTakingApp();
+    }
+
+    @Test
+    public void testLoadNotes_EmptyFile() {
+        // Ensure that loading notes from an empty file returns an empty list
+        File file = new File("notes.txt");
+        if (file.exists()) {
+            file.delete(); // Remove the file if it exists for a clean test
+        }
+        List<String> notes = noteTakingApp.loadNotes();
+        assertTrue(notes.isEmpty(), "Notes should be empty.");
+    }
+
+    @Test
+    public void testSaveAndLoadNotes() {
+        // Test saving and loading notes
+        String note = "This is a test note.";
+        List<String> notesToSave = new ArrayList<>();
+        notesToSave.add(note);
+        noteTakingApp.saveNotes(notesToSave);
+        
+        List<String> notes = noteTakingApp.loadNotes();
+        assertEquals(1, notes.size(), "There should be one note loaded.");
+        assertEquals(note, notes.get(0), "The loaded note should match the saved note.");
+    }
+}
