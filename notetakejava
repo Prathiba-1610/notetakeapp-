@@ -1,0 +1,119 @@
+package org.example.MyForstProject;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class NoteTakingApp {
+    private static final String FILE_NAME = "notes.txt";
+    private Scanner scanner;
+
+    public NoteTakingApp() {
+        scanner = new Scanner(System.in);
+    }
+
+    public void start() {
+        while (true) {
+            System.out.println("Welcome to the Note-Taking Application!");
+            System.out.println("1. Add a note");
+            System.out.println("2. View notes");
+            System.out.println("3. Delete a note");
+            System.out.println("4. Exit");
+            System.out.print("Please choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    addNote();
+                    break;
+                case 2:
+                    viewNotes();
+                    break;
+                case 3:
+                    deleteNote();
+                    break;
+                case 4:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private void addNote() {
+        System.out.print("Enter your note: ");
+        String note = scanner.nextLine();
+        List<String> notesToSave = loadNotes(); // Load existing notes
+        notesToSave.add(note); // Add new note
+        saveNotes(notesToSave); // Save updated notes
+        System.out.println("Note saved!");
+    }
+
+    private void viewNotes() {
+        List<String> notes = loadNotes();
+        System.out.println("Your notes:");
+        if (notes.isEmpty()) {
+            System.out.println("No notes available.");
+        } else {
+            for (int i = 0; i < notes.size(); i++) {
+                System.out.println((i + 1) + ". " + notes.get(i));
+            }
+        }
+    }
+
+    private void deleteNote() {
+        List<String> notes = loadNotes();
+        if (notes.isEmpty()) {
+            System.out.println("No notes available to delete.");
+            return;
+        }
+
+        viewNotes(); // Display existing notes
+        System.out.print("Enter the number of the note to delete: ");
+        int noteIndex = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        if (noteIndex > 0 && noteIndex <= notes.size()) {
+            notes.remove(noteIndex - 1);
+            saveNotes(notes); // Save updated notes
+            System.out.println("Note deleted successfully.");
+        } else {
+            System.out.println("Invalid note number.");
+        }
+    }
+
+    public List<String> loadNotes() {
+        List<String> notes = new ArrayList<>();
+        File file = new File(FILE_NAME);
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    notes.add(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return notes;
+    }
+
+    public void saveNotes(List<String> notes) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+            for (String note : notes) {
+                writer.write(note);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        NoteTakingApp app = new NoteTakingApp();
+        app.start();
+    }
+}
